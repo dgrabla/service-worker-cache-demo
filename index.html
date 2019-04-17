@@ -1,0 +1,44 @@
+<html>
+	<body>
+		<style>
+			body {
+				max-width: 38rem;
+				padding: 2rem;
+				margin: auto;
+			}
+		</style>
+
+		<button data-model="a1">A1</button>
+		<button data-model="a3">A3</button>
+		<button data-model="a4">A4</button>
+
+		<div id="content"></div>
+
+		<script>
+
+			navigator.serviceWorker
+			.register('/sw.js')
+			.then(subscription => console.log('%c subscription:', 'color: #d83', subscription))
+			.catch(err => console.error('error:', err));
+
+ 			const baseContentUrl = "/content/";
+
+			const fetchContent = async url => {
+				console.info(`Fetch ${url}...`);
+				const request = await fetch(url);
+				return await request.text();
+			};
+
+			const content = document.querySelector("#content");
+			const navigationButtons = [...document.querySelectorAll("button")];
+
+			navigationButtons.forEach(button => {
+				button.addEventListener("click", event => {
+					fetchContent(
+						`${baseContentUrl}${event.target.dataset.model}.html`
+					).then(autoContent => (content.innerHTML = autoContent));
+				});
+			});
+		</script>
+	</body>
+</html>
